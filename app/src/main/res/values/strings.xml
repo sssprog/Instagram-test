@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Instagram test</string>
+    <string name="refresh">Refresh</string>
+    <string name="loading">Loading…</string>
+    <string name="no_items">No items</string>
+    <string name="login">Login</string>
+    <string name="change_user">Change user</string>
+    <string name="posts_of_user">Showing posts of user: %s</string>
+    <string name="change_user_name_dialog_title">Enter new name</string>
+    <string name="posts">Posts</string>
+    <string name="general_error_message">Error happened</string>
+    <string name="user_name">User name</string>
+    <string name="details">Details</string>
+</resources>

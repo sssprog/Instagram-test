@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pref_instagram_access_token">pref_instagram_access_token</string>
+    <string name="pref_last_item_id">pref_last_item_id</string>
+    <string name="pref_current_user_name">pref_current_user_name</string>
+    <string name="pref_current_user_id">pref_current_user_id</string>
+
+    <string name="instagram_client_id">c1193573ccad48f78285e33426e59483</string>
+    <string name="instagram_client_secret">fb164f9e14d64ef38fd441a631c30b6e</string>
+    <string name="instagram_callback_url">sssprog://instagram</string>
+</resources>
