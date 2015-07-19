@@ -73,7 +73,7 @@ public class InstagramClient {
                 .add("redirect_uri", callbackUrl)
                 .add("response_type", "code")
                 .add("display", "touch")
-                .add("scope", "likes+comments+relationships");
+                .add("scope", "likes+comments+relationships", false);
         return AUTH_URL + params.asUrlParams();
     }
 

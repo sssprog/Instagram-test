@@ -13,6 +13,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
+        Config.initAppComponent(this);
         Prefs.init(this);
         InstagramClient.getInstance().init(getString(R.string.instagram_client_id),
                 getString(R.string.instagram_client_secret), getString(R.string.instagram_callback_url));

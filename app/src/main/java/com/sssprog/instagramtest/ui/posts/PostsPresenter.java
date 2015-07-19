@@ -1,8 +1,8 @@
 package com.sssprog.instagramtest.ui.posts;
 
+import com.sssprog.instagramtest.Config;
 import com.sssprog.instagramtest.api.SimpleRxSubscriber;
 import com.sssprog.instagramtest.api.models.RecentItemsResponse;
-import com.sssprog.instagramtest.api.services.PostService;
 import com.sssprog.instagramtest.mvp.Presenter;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ public class PostsPresenter extends Presenter<PostsActivity> {
         isLoading = true;
         lastRequestId++;
         final int requestId = lastRequestId;
-        PostService.getInstance().getItems(fromStart)
+        Config.appComponent().postService().getItems(fromStart)
                 .subscribe(new SimpleRxSubscriber<RecentItemsResponse>() {
                     @Override
                     public void onNext(final RecentItemsResponse response) {

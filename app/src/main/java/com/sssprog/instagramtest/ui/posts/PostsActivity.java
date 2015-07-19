@@ -16,9 +16,10 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import com.sssprog.instagramtest.Config;
 import com.sssprog.instagramtest.R;
 import com.sssprog.instagramtest.api.database.Post;
-import com.sssprog.instagramtest.api.services.PostService;
+import com.sssprog.instagramtest.api.services.PostServiceImpl;
 import com.sssprog.instagramtest.mvp.PresenterClass;
 import com.sssprog.instagramtest.ui.BaseMvpActivity;
 import com.sssprog.instagramtest.ui.post.PostActivity;
@@ -144,7 +145,7 @@ public class PostsActivity extends BaseMvpActivity<PostsPresenter> {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK && requestCode == REQUEST_CHANGE_NAME) {
             updateUserNameView();
-            PostService.getInstance().clearCache();
+            Config.appComponent().postService().clearCache();
             loadItems(true);
         }
         super.onActivityResult(requestCode, resultCode, data);

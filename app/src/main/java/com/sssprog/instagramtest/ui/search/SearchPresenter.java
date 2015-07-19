@@ -1,8 +1,8 @@
 package com.sssprog.instagramtest.ui.search;
 
+import com.sssprog.instagramtest.Config;
 import com.sssprog.instagramtest.api.SimpleRxSubscriber;
 import com.sssprog.instagramtest.api.models.SearchItem;
-import com.sssprog.instagramtest.api.services.SearchService;
 import com.sssprog.instagramtest.mvp.Presenter;
 
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public class SearchPresenter extends Presenter<SearchActivity> {
 
     private void searchInternal(final String userName) {
         lastSearch = userName;
-        SearchService.getInstance().search(userName)
+        Config.appComponent().searchService().search(userName)
                 .subscribe(new SimpleRxSubscriber<List<SearchItem>>() {
                     @Override
                     public void onNext(final List<SearchItem> items) {

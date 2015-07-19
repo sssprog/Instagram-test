@@ -7,37 +7,58 @@ import java.net.URLEncoder;
 import java.util.Map;
 
 public class QueryParams {
-    private LinkedTreeMap<String, Object> params = new LinkedTreeMap<>();
+    private LinkedTreeMap<String, ParamValue> params = new LinkedTreeMap<>();
 
     public QueryParams add(String name, Object value) {
-        params.put(name, value);
+        return add(name, value, true);
+    }
+
+    public QueryParams add(String name, Object value, boolean encode) {
+        params.put(name, new ParamValue(value, encode));
         return this;
     }
 
-    public String asUrlParams() {
+    private String toString(boolean urlParams) {
         if (params.isEmpty()) {
             return "";
         }
-        String result = "?";
+        String result = urlParams ? "?" : "";
         boolean first = true;
-        for (Map.Entry<String, Object> entry : params.entrySet()) {
-            String value;
-            try {
-                value = URLEncoder.encode(entry.getValue().toString(), "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                value = entry.getValue().toString();
-            }
+        for (Map.Entry<String, ParamValue> entry : params.entrySet()) {
             if (!first) {
                 result += "&";
             }
-            result += entry.getKey() + "=" + value;
+            result += entry.getKey() + "=" + entry.getValue().asString(urlParams);
             first = false;
         }
         return result;
     }
 
+    public String asUrlParams() {
+        return toString(true);
+    }
+
     public String asBody() {
-        String result = asUrlParams();
-        return result.isEmpty() ? result : result.substring(1);
+        return toString(false);
+    }
+
+    private static class ParamValue {
+        final Object value;
+        final boolean encode;
+
+        public ParamValue(Object value, boolean encode) {
+            this.value = value;
+            this.encode = encode;
+        }
+
+        public String asString(boolean encodeIfNeeded) {
+            if (encode && encodeIfNeeded) {
+                try {
+                    return URLEncoder.encode(value.toString(), "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                }
+            }
+            return value.toString();
+        }
     }
 }
