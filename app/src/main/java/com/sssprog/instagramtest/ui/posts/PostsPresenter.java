@@ -1,7 +1,6 @@
 package com.sssprog.instagramtest.ui.posts;
 
 import com.sssprog.instagramtest.api.SimpleRxSubscriber;
-import com.sssprog.instagramtest.api.database.Post;
 import com.sssprog.instagramtest.api.models.RecentItemsResponse;
 import com.sssprog.instagramtest.api.services.PostService;
 import com.sssprog.instagramtest.mvp.Presenter;
@@ -30,12 +29,7 @@ public class PostsPresenter extends Presenter<PostsActivity> {
                             return;
                         }
                         isLoading = false;
-                        runViewAction(new Runnable() {
-                            @Override
-                            public void run() {
-                                getView().onItemsLoaded(response.items, fromStart, response.allLoaded);
-                            }
-                        });
+                        runViewAction(() -> getView().onItemsLoaded(response.items, fromStart, response.allLoaded));
                     }
 
                     @Override
@@ -45,12 +39,7 @@ public class PostsPresenter extends Presenter<PostsActivity> {
                             return;
                         }
                         isLoading = false;
-                        runViewAction(new Runnable() {
-                            @Override
-                            public void run() {
-                                getView().onItemsLoaded(new ArrayList<Post>(), fromStart, true);
-                            }
-                        });
+                        runViewAction(() -> getView().onItemsLoaded(new ArrayList<>(), fromStart, true));
                     }
                 });
     }

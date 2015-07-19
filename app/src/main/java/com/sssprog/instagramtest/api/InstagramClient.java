@@ -129,26 +129,21 @@ public class InstagramClient {
     }
 
     private <T> Observable<T> makeRequest(final Request.Builder builder, final Type type) {
-        return Observable.create(new Observable.OnSubscribe<T>() {
-            @Override
-            public void call(final Subscriber<? super T> subscriber) {
-                ApiUtils.executeWithRuntimeException(new ApiUtils.ApiTask() {
-                    @Override
-                    public void execute() throws Exception {
+        return Observable
+                .create((final Subscriber<? super T> subscriber) -> {
+                    ApiUtils.executeWithRuntimeException(() -> {
                         Request request = builder.build();
                         Response response = getHttpClient().newCall(request).execute();
+                        String body = response.body().string();
+                        logRequest(request, response, body);
                         if (response.code() >= 400) {
                             throw new RuntimeException("failed");
                         }
-                        String body = response.body().string();
-                        logRequest(request, response, body);
                         T result = gson.fromJson(body, type);
                         subscriber.onNext(result);
                         subscriber.onCompleted();
-                    }
+                    });
                 });
-            }
-        });
     }
 
     protected void logRequest(Request request, Response response, String body) throws IOException {

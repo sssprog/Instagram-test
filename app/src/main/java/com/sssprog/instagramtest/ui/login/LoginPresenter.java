@@ -12,23 +12,13 @@ public class LoginPresenter extends BlockingPresenter<LoginActivity> {
                 .subscribe(new SimpleRxSubscriber<Void>() {
                     @Override
                     public void onCompleted() {
-                        runViewAction(new Runnable() {
-                            @Override
-                            public void run() {
-                                getView().onLoginSuccess();
-                            }
-                        });
+                        runViewAction(() -> getView().onLoginSuccess());
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         super.onError(e);
-                        runViewAction(new Runnable() {
-                            @Override
-                            public void run() {
-                                getView().onLoginFailed();
-                            }
-                        });
+                        runViewAction(() -> getView().onLoginFailed());
                     }
                 });
     }

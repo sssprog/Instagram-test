@@ -12,23 +12,13 @@ public class PostPresenter extends Presenter<PostActivity> {
                 .subscribe(new SimpleRxSubscriber<PostWithComments>() {
                     @Override
                     public void onNext(final PostWithComments data) {
-                        runViewAction(new Runnable() {
-                            @Override
-                            public void run() {
-                                getView().onDataLoaded(data);
-                            }
-                        });
+                        runViewAction(() -> getView().onDataLoaded(data));
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         super.onError(e);
-                        runViewAction(new Runnable() {
-                            @Override
-                            public void run() {
-                                getView().onError();
-                            }
-                        });
+                        runViewAction(() -> getView().onError());
                     }
                 });
     }

@@ -39,12 +39,9 @@ public class SearchPresenter extends Presenter<SearchActivity> {
                 .subscribe(new SimpleRxSubscriber<List<SearchItem>>() {
                     @Override
                     public void onNext(final List<SearchItem> items) {
-                        runViewAction(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (lastSearch.equals(userName)) {
-                                    getView().onItemsLoaded(items);
-                                }
+                        runViewAction(() -> {
+                            if (lastSearch.equals(userName)) {
+                                getView().onItemsLoaded(items);
                             }
                         });
                     }
@@ -52,12 +49,9 @@ public class SearchPresenter extends Presenter<SearchActivity> {
                     @Override
                     public void onError(Throwable e) {
                         super.onError(e);
-                        runViewAction(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (lastSearch.equals(userName)) {
-                                    getView().onItemsLoaded(new ArrayList<SearchItem>());
-                                }
+                        runViewAction(() -> {
+                            if (lastSearch.equals(userName)) {
+                                getView().onItemsLoaded(new ArrayList<SearchItem>());
                             }
                         });
                     }
