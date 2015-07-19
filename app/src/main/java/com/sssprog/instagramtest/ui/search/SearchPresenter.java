@@ -51,7 +51,7 @@ public class SearchPresenter extends Presenter<SearchActivity> {
                         super.onError(e);
                         runViewAction(() -> {
                             if (lastSearch.equals(userName)) {
-                                getView().onItemsLoaded(new ArrayList<SearchItem>());
+                                getView().onItemsLoaded(new ArrayList<>());
                             }
                         });
                     }

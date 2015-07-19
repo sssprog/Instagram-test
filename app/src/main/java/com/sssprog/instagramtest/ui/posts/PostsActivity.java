@@ -9,7 +9,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -70,12 +69,9 @@ public class PostsActivity extends BaseMvpActivity<PostsPresenter> {
         adapter = new PostsAdapter(this);
         listView.setAdapter(adapter);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Post item = (Post) listView.getItemAtPosition(position);
-                startActivity(PostActivity.createIntent(PostsActivity.this, item.getId()));
-            }
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            Post item = (Post) listView.getItemAtPosition(position);
+            startActivity(PostActivity.createIntent(PostsActivity.this, item.getId()));
         });
 
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {

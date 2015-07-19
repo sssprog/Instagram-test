@@ -32,13 +32,15 @@ public class InstagramClient {
     private static final String AUTH_URL = "https://api.instagram.com/oauth/authorize/";
     private static final String TOKEN_URL = "https://api.instagram.com/oauth/access_token";
     private static final String API_URL = "https://api.instagram.com/v1";
-    private static final String REQUEST_RECENT_MEDIA = "/users/%s/media/recent/?access_token=%s&count=%d";
-    private static final String REQUEST_SEARCH = "/users/search?access_token=%s&q=%s";
-    private static final String REQUEST_COMMENTS = "/media/%s/comments?access_token=%s";
+    private static final String REQUEST_RECENT_MEDIA = "/users/%s/media/recent";
+    private static final String REQUEST_SEARCH = "/users/search";
+    private static final String REQUEST_COMMENTS = "/media/%s/comments";
 
     private static final long CONNECTION_TIMEOUT = 30;
     private static final long READ_TIMEOUT = 30;
     public static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
+
+    private static final String PARAM_TOKEN = "access_token";
 
     private static InstagramClient instance;
 
@@ -66,8 +68,13 @@ public class InstagramClient {
     }
 
     public String getAuthUrl() {
-        return AUTH_URL + "?client_id=" + clientId + "&redirect_uri="
-                + callbackUrl + "&response_type=code&display=touch&scope=likes+comments+relationships";
+        QueryParams params = new QueryParams()
+                .add("client_id", clientId)
+                .add("redirect_uri", callbackUrl)
+                .add("response_type", "code")
+                .add("display", "touch")
+                .add("scope", "likes+comments+relationships");
+        return AUTH_URL + params.asUrlParams();
     }
 
     public String getCallbackUrl() {
@@ -75,14 +82,16 @@ public class InstagramClient {
     }
 
     public Observable<TokenResponseJson> login(final String code) {
-        String body = "client_id=" + clientId +
-                "&client_secret=" + clientSecret +
-                "&grant_type=authorization_code" +
-                "&redirect_uri=" + callbackUrl +
-                "&code=" + code;
+        QueryParams params = new QueryParams()
+                .add("client_id", clientId)
+                .add("client_secret", clientSecret)
+                .add("redirect_uri", callbackUrl)
+                .add("redirect_uri", callbackUrl)
+                .add("code", code)
+                .add("grant_type", "authorization_code");
         Request.Builder request = new Request.Builder()
                 .url(TOKEN_URL)
-                .post(RequestBody.create(MEDIA_TYPE_JSON, body));
+                .post(RequestBody.create(MEDIA_TYPE_JSON, params.asBody()));
         return makeRequest(request, new TypeToken<TokenResponseJson>() { }.getType());
     }
 
@@ -104,28 +113,40 @@ public class InstagramClient {
     }
 
     public Observable<RecentResponseJson> getRecentItems(String lastId, final int count) {
-        String url = makeApiUrl(REQUEST_RECENT_MEDIA, Prefs.getUserId(), getAccessToken(), count);
+        QueryParams params = getBasicQueryParams()
+                .add("count", count);
+        String url = makeApiUrl(REQUEST_RECENT_MEDIA, params, Prefs.getUserId());
         if (lastId != null) {
-            url += "&max_id=" + lastId;
+            params.add("max_id", lastId);
         }
         Request.Builder request = new Request.Builder().url(url);
         return makeRequest(request, new TypeToken<RecentResponseJson>() { }.getType());
     }
 
     public Observable<SearchResponseJson> search(String userName) {
+        QueryParams params = getBasicQueryParams()
+                .add("q", userName);
         Request.Builder request = new Request.Builder()
-                .url(makeApiUrl(REQUEST_SEARCH, getAccessToken(), userName));
-        return makeRequest(request, new TypeToken<SearchResponseJson>() { }.getType());
+                .url(makeApiUrl(REQUEST_SEARCH, params));
+        return makeRequest(request, new TypeToken<SearchResponseJson>() {
+        }.getType());
     }
 
     public Observable<CommentResponseJson> getComments(String postId) {
         Request.Builder request = new Request.Builder()
-                .url(makeApiUrl(REQUEST_COMMENTS, postId, getAccessToken()));
+                .url(makeApiUrl(REQUEST_COMMENTS, getBasicQueryParams(), postId));
         return makeRequest(request, new TypeToken<CommentResponseJson>() { }.getType());
     }
 
-    private String makeApiUrl(String path, Object... params) {
-        return String.format(Locale.US, API_URL + path, params);
+    private QueryParams getBasicQueryParams() {
+        return new QueryParams()
+                .add(PARAM_TOKEN, getAccessToken());
+    }
+
+    private String makeApiUrl(String path, QueryParams queryParams, Object... pathParams) {
+        return API_URL +
+                String.format(Locale.US, path, pathParams) +
+                queryParams.asUrlParams();
     }
 
     private <T> Observable<T> makeRequest(final Request.Builder builder, final Type type) {

@@ -7,7 +7,6 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -48,15 +47,12 @@ public class SearchActivity extends BaseMvpActivity<SearchPresenter> {
 
         adapter = new SearchAdapter(this);
         listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                SearchItem item = (SearchItem) listView.getItemAtPosition(position);
-                Prefs.putString(R.string.pref_current_user_name, item.getUserName());
-                Prefs.putString(R.string.pref_current_user_id, item.getId());
-                setResult(RESULT_OK);
-                finish();
-            }
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            SearchItem item = (SearchItem) listView.getItemAtPosition(position);
+            Prefs.putString(R.string.pref_current_user_name, item.getUserName());
+            Prefs.putString(R.string.pref_current_user_id, item.getId());
+            setResult(RESULT_OK);
+            finish();
         });
 
         initStateSwitcher();
