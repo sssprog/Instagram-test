@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.sssprog.instagramtest.api.InstagramClient;
 import com.sssprog.instagramtest.api.InstagramClientImpl;
+import com.sssprog.instagramtest.api.database.DatabaseHelper;
 import com.sssprog.instagramtest.api.services.LoginService;
 import com.sssprog.instagramtest.api.services.LoginServiceImpl;
 import com.sssprog.instagramtest.api.services.PostService;
@@ -20,9 +21,11 @@ import dagger.Provides;
 public class AppModule {
 
     private Context appContext;
+    private boolean isInTestMode;
 
-    public AppModule(Context context) {
+    public AppModule(Context context, boolean isInTestMode) {
         this.appContext = context;
+        this.isInTestMode = isInTestMode;
     }
 
     @Provides
@@ -41,14 +44,20 @@ public class AppModule {
 
     @Provides
     @Singleton
+    DatabaseHelper provideDatabaseHelper(Context context) {
+        return new DatabaseHelper(context, isInTestMode);
+    }
+
+    @Provides
+    @Singleton
     LoginService provideLoginService(InstagramClient client) {
         return new LoginServiceImpl(client);
     }
 
     @Provides
     @Singleton
-    PostService providePostService(InstagramClient client) {
-        return new PostServiceImpl(client);
+    PostService providePostService(InstagramClient client, DatabaseHelper database) {
+        return new PostServiceImpl(client, database);
     }
 
     @Provides

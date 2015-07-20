@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 
 public class SearchPresenter extends Presenter<SearchActivity> {
@@ -41,6 +42,7 @@ public class SearchPresenter extends Presenter<SearchActivity> {
     private void searchInternal(final String userName) {
         lastSearch = userName;
         searchService.search(userName)
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SimpleRxSubscriber<List<SearchItem>>() {
                     @Override
                     public void onNext(final List<SearchItem> items) {

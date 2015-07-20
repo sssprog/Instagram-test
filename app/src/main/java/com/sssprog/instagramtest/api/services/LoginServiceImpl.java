@@ -5,10 +5,10 @@ import android.text.TextUtils;
 import com.sssprog.instagramtest.R;
 import com.sssprog.instagramtest.api.InstagramClient;
 import com.sssprog.instagramtest.api.json.TokenResponseJson;
+import com.sssprog.instagramtest.utils.LogHelper;
 import com.sssprog.instagramtest.utils.Prefs;
 
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -25,6 +25,7 @@ public class LoginServiceImpl implements LoginService {
                 .map(new Func1<TokenResponseJson, Void>() {
                     @Override
                     public Void call(TokenResponseJson json) {
+                        LogHelper.i("-tag-", "login request finished");
                         if (!TextUtils.isEmpty(json.accessToken)) {
                             Prefs.putString(R.string.pref_instagram_access_token, json.accessToken);
                         } else {
@@ -33,8 +34,7 @@ public class LoginServiceImpl implements LoginService {
                         return null;
                     }
                 })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                .subscribeOn(Schedulers.io());
     }
 
 }

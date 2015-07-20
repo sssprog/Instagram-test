@@ -9,6 +9,8 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
+import rx.android.schedulers.AndroidSchedulers;
+
 public class PostsPresenter extends Presenter<PostsActivity> {
 
     private PostService postService;
@@ -30,6 +32,7 @@ public class PostsPresenter extends Presenter<PostsActivity> {
         lastRequestId++;
         final int requestId = lastRequestId;
         postService.getItems(fromStart)
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SimpleRxSubscriber<RecentItemsResponse>() {
                     @Override
                     public void onNext(final RecentItemsResponse response) {

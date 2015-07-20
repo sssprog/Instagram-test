@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable;
 import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class PostServiceImpl implements PostService {
@@ -33,10 +32,12 @@ public class PostServiceImpl implements PostService {
     private static final int MAX_COMMENTS = 5;
 
     private InstagramClient client;
+    private DatabaseHelper database;
     private AtomicInteger lastRequestId = new AtomicInteger();
 
-    public PostServiceImpl(InstagramClient client) {
+    public PostServiceImpl(InstagramClient client, DatabaseHelper database) {
         this.client = client;
+        this.database = database;
     }
 
     @Override
@@ -63,17 +64,16 @@ public class PostServiceImpl implements PostService {
                         throw new RuntimeException(e);
                     }
                 })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                .subscribeOn(Schedulers.io());
     }
 
     private List<Post> saveItems(final boolean firstPage, final List<PostJson> jsonItems) {
-        return ApiUtils.callInTransaction(() -> {
+        return ApiUtils.callInTransaction(database, () -> {
             if (firstPage) {
-                DatabaseHelper.getInstance().clearTable(Post.class);
+                database.clearTable(Post.class);
             }
             List<Post> result = new ArrayList<>();
-            Dao<Post, Long> dao = DatabaseHelper.getInstance().getPostDao();
+            Dao<Post, Long> dao = database.getPostDao();
             for (PostJson json : jsonItems) {
                 if (json.id != null) {
                     Prefs.putString(R.string.pref_last_item_id, json.id);
@@ -95,7 +95,7 @@ public class PostServiceImpl implements PostService {
     }
 
     private List<Post> getItemsFromDb() throws SQLException {
-        return DatabaseHelper.getInstance().getPostDao()
+        return database.getPostDao()
                 .queryBuilder()
                 .orderBy(Post.FIELD_ID, true)
                 .query();
@@ -105,10 +105,9 @@ public class PostServiceImpl implements PostService {
     public void clearCache() {
         Observable
                 .create((Subscriber<? super Void> subscriber) -> {
-                    ApiUtils.executeWithRuntimeException(() -> DatabaseHelper.getInstance().clearTable(Post.class));
+                    ApiUtils.executeWithRuntimeException(() -> database.clearTable(Post.class));
                 })
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SimpleRxSubscriber<Void>());
     }
 
@@ -116,8 +115,7 @@ public class PostServiceImpl implements PostService {
     public Observable<PostWithComments> getPostWithComments(long postId) {
         return getItem(postId)
                 .flatMap(this::loadComments)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                .subscribeOn(Schedulers.io());
     }
 
     private Observable<PostWithComments> loadComments(final Post post) {
@@ -137,9 +135,9 @@ public class PostServiceImpl implements PostService {
     }
 
     private List<Comment> saveCommentsToDb(final long postId, final List<CommentJson> jsonItems) {
-        return ApiUtils.callInTransaction(() -> {
+        return ApiUtils.callInTransaction(database, () -> {
             deleteComments(postId);
-            Dao<Comment, Long> dao = DatabaseHelper.getInstance().getCommentDao();
+            Dao<Comment, Long> dao = database.getCommentDao();
             List<Comment> result = new ArrayList<>();
             int count = Math.min(jsonItems.size(), MAX_COMMENTS);
             for (int i = 0; i < count; i++) {
@@ -159,14 +157,14 @@ public class PostServiceImpl implements PostService {
     }
 
     private List<Comment> getCommentsFromDb(long postId) throws SQLException {
-        return DatabaseHelper.getInstance().getCommentDao()
+        return database.getCommentDao()
                 .queryBuilder()
                 .where().eq(Comment.FIELD_POST_ID, postId)
                 .query();
     }
 
     private void deleteComments(long postId) throws SQLException {
-        DeleteBuilder<Comment, Long> query = DatabaseHelper.getInstance().getCommentDao().deleteBuilder();
+        DeleteBuilder<Comment, Long> query = database.getCommentDao().deleteBuilder();
         query.where().eq(Comment.FIELD_POST_ID, postId);
         query.delete();
     }
@@ -175,7 +173,7 @@ public class PostServiceImpl implements PostService {
         return Observable
                 .create((final Subscriber<? super Post> subscriber) -> {
                     ApiUtils.executeWithRuntimeException(() -> {
-                        Post item = DatabaseHelper.getInstance().getPostDao().queryForId(postId);
+                        Post item = database.getPostDao().queryForId(postId);
                         if (item == null) {
                             throw new RuntimeException("no such item in the DB");
                         }

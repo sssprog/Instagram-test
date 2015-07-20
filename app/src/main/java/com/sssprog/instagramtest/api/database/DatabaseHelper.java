@@ -7,7 +7,6 @@ import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
-import com.sssprog.instagramtest.App;
 import com.sssprog.instagramtest.utils.LogHelper;
 
 import java.sql.SQLException;
@@ -26,19 +25,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             Comment.class
     }));
 
-    private static DatabaseHelper instance;
-    private Context context;
-
-    public DatabaseHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        this.context = context;
-    }
-
-    public static synchronized DatabaseHelper getInstance() {
-        if (instance == null) {
-            instance = new DatabaseHelper(App.getInstance());
-        }
-        return instance;
+    public DatabaseHelper(Context context, boolean isInTestMode) {
+        super(context, isInTestMode ? null : DATABASE_NAME, null, DATABASE_VERSION);
+        LogHelper.i("-tag-", "create database " + isInTestMode);
     }
 
     @Override
@@ -83,6 +72,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     public void clearTable(Class<?> cls) throws SQLException {
         TableUtils.clearTable(connectionSource, cls);
         getDao(cls).clearObjectCache();
+    }
+
+    public void clearAll() throws SQLException {
+        for (Class<?> dataClass : DATA_CLASSES) {
+            clearTable(dataClass);
+        }
     }
 
 }

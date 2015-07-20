@@ -22,9 +22,9 @@ public class Config {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
     }
 
-    public static void initAppComponent(Context context) {
+    public static void initAppComponent(Context context, boolean isInTestMode) {
         appComponent = DaggerAppComponent.builder()
-                .appModule(new AppModule(context))
+                .appModule(new AppModule(context, isInTestMode))
                 .build();
     }
 

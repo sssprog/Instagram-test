@@ -6,6 +6,8 @@ import com.sssprog.instagramtest.mvp.BlockingPresenter;
 
 import javax.inject.Inject;
 
+import rx.android.schedulers.AndroidSchedulers;
+
 public class LoginPresenter extends BlockingPresenter<LoginActivity> {
 
     private LoginService loginService;
@@ -18,6 +20,7 @@ public class LoginPresenter extends BlockingPresenter<LoginActivity> {
     public void login(String code) {
         setExecutingRequest(true);
         loginService.login(code)
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SimpleRxSubscriber<Void>() {
                     @Override
                     public void onCompleted() {

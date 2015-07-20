@@ -7,6 +7,8 @@ import com.sssprog.instagramtest.mvp.Presenter;
 
 import javax.inject.Inject;
 
+import rx.android.schedulers.AndroidSchedulers;
+
 public class PostPresenter extends Presenter<PostActivity> {
 
     private PostService postService;
@@ -18,6 +20,7 @@ public class PostPresenter extends Presenter<PostActivity> {
 
     public void loadData(long postId) {
         postService.getPostWithComments(postId)
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SimpleRxSubscriber<PostWithComments>() {
                     @Override
                     public void onNext(final PostWithComments data) {

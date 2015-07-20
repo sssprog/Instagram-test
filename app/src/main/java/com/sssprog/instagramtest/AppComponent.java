@@ -3,6 +3,7 @@ package com.sssprog.instagramtest;
 import android.content.Context;
 
 import com.sssprog.instagramtest.api.InstagramClient;
+import com.sssprog.instagramtest.api.database.DatabaseHelper;
 import com.sssprog.instagramtest.api.services.LoginService;
 import com.sssprog.instagramtest.api.services.PostService;
 import com.sssprog.instagramtest.api.services.SearchService;
@@ -20,5 +21,6 @@ public interface AppComponent {
     LoginService loginService();
     PostService postService();
     SearchService searchService();
+    DatabaseHelper database();
 
 }

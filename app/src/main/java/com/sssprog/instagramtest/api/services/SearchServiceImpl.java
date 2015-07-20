@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class SearchServiceImpl implements SearchService {
@@ -23,8 +22,7 @@ public class SearchServiceImpl implements SearchService {
     public Observable<List<SearchItem>> search(String userName) {
         return client.search(userName)
                 .map(response -> transform(response.data != null ? response.data : new ArrayList<>()))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                .subscribeOn(Schedulers.io());
     }
 
     private List<SearchItem> transform(List<SearchItemJson> jsonItems) {

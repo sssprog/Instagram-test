@@ -20,9 +20,9 @@ public class ApiUtils {
         void execute() throws Exception;
     }
 
-    public static <T> T callInTransaction(Callable<T> task) {
+    public static <T> T callInTransaction(DatabaseHelper database, Callable<T> task) {
         try {
-            return TransactionManager.callInTransaction(DatabaseHelper.getInstance().getConnectionSource(), task);
+            return TransactionManager.callInTransaction(database.getConnectionSource(), task);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
