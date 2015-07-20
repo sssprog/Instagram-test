@@ -22,7 +22,7 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class LoginActivity extends BaseMvpActivity<LoginPresenter> {
+public class LoginActivity extends BaseMvpActivity<LoginPresenter> implements LoginView {
 
     private static final String TAG = LogHelper.getTag(LoginActivity.class);
 
@@ -69,12 +69,14 @@ public class LoginActivity extends BaseMvpActivity<LoginPresenter> {
         webView.loadUrl(client.getAuthUrl());
     }
 
-    void onLoginSuccess() {
+    @Override
+    public void onLoginSuccess() {
         setResult(RESULT_OK);
         finish();
     }
 
-    void onLoginFailed() {
+    @Override
+    public void onLoginFailed() {
         Toast.makeText(this, R.string.general_error_message, Toast.LENGTH_SHORT).show();
         finish();
     }

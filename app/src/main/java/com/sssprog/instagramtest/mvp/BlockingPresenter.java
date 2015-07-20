@@ -1,8 +1,6 @@
 package com.sssprog.instagramtest.mvp;
 
-import com.sssprog.instagramtest.ui.BaseMvpActivity;
-
-public class BlockingPresenter<V extends BaseMvpActivity> extends Presenter<V> {
+public class BlockingPresenter<V extends BlockingView> extends Presenter<V> {
 
     protected boolean isExecutingRequest;
 

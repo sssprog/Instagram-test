@@ -8,7 +8,7 @@ import javax.inject.Inject;
 
 import rx.android.schedulers.AndroidSchedulers;
 
-public class LoginPresenter extends BlockingPresenter<LoginActivity> {
+public class LoginPresenter extends BlockingPresenter<LoginView> {
 
     private LoginService loginService;
 

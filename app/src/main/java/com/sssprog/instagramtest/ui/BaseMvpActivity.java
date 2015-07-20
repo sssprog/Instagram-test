@@ -3,11 +3,12 @@ package com.sssprog.instagramtest.ui;
 import android.os.Bundle;
 
 import com.sssprog.instagramtest.dialogs.ProgressDialogFragment;
+import com.sssprog.instagramtest.mvp.BlockingView;
 import com.sssprog.instagramtest.mvp.Presenter;
 import com.sssprog.instagramtest.mvp.PresenterFactory;
 import com.sssprog.instagramtest.mvp.PresenterHolder;
 
-public abstract class BaseMvpActivity<P extends Presenter> extends BaseActivity {
+public abstract class BaseMvpActivity<P extends Presenter> extends BaseActivity implements BlockingView {
 
     private static final String LOADING_DIALOG_TAG = "loading_dialog";
 
@@ -53,12 +54,14 @@ public abstract class BaseMvpActivity<P extends Presenter> extends BaseActivity 
         }
     }
 
+    @Override
     public void showLoadingDialog() {
         getSupportFragmentManager().beginTransaction()
                 .add(ProgressDialogFragment.newInstance(), LOADING_DIALOG_TAG)
                 .commit();
     }
 
+    @Override
     public void dismissLoadingDialog() {
         ProgressDialogFragment dialog = (ProgressDialogFragment) getSupportFragmentManager().findFragmentByTag(LOADING_DIALOG_TAG);
         dialog.dismiss();
