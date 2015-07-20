@@ -10,11 +10,14 @@ import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.sssprog.instagramtest.Config;
 import com.sssprog.instagramtest.R;
 import com.sssprog.instagramtest.api.InstagramClient;
 import com.sssprog.instagramtest.mvp.PresenterClass;
 import com.sssprog.instagramtest.ui.BaseMvpActivity;
 import com.sssprog.instagramtest.utils.LogHelper;
+
+import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -29,16 +32,30 @@ public class LoginActivity extends BaseMvpActivity<LoginPresenter> {
     @InjectView(R.id.progressBar)
     ProgressBar progressBar;
 
+    private LoginActivityComponent component;
+    @Inject
+    InstagramClient client;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.inject(this);
+        component = DaggerLoginActivityComponent.builder()
+                .appComponent(Config.appComponent())
+                .build();
+        component.inject(this);
 
         setUpWebView();
         CookieSyncManager.createInstance(this);
         CookieManager cookieManager = CookieManager.getInstance();
         cookieManager.removeAllCookie();
+    }
+
+    @Override
+    protected void injectPresenter() {
+        super.injectPresenter();
+        component.inject(getPresenter());
     }
 
     @Override
@@ -51,7 +68,7 @@ public class LoginActivity extends BaseMvpActivity<LoginPresenter> {
         webView.setHorizontalScrollBarEnabled(false);
         webView.setWebViewClient(new OAuthWebViewClient());
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.loadUrl(InstagramClient.getInstance().getAuthUrl());
+        webView.loadUrl(client.getAuthUrl());
     }
 
     void onLoginSuccess() {
@@ -70,7 +87,7 @@ public class LoginActivity extends BaseMvpActivity<LoginPresenter> {
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             LogHelper.d(TAG, "Redirecting URL " + url);
 
-            if (url.startsWith(InstagramClient.getInstance().getCallbackUrl())) {
+            if (url.startsWith(client.getCallbackUrl())) {
                 String urls[] = url.split("=");
                 getPresenter().login(urls[1]);
                 return true;

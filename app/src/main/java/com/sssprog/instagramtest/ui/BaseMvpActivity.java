@@ -19,9 +19,12 @@ public abstract class BaseMvpActivity<P extends Presenter> extends BaseActivity 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        presenterHolder = PresenterHolder.createHolder(this);
+        presenterHolder = PresenterHolder.createHolder(this, this::injectPresenter);
         presenterHolder.init(savedInstanceState);
         getPresenter().attach(this);
+    }
+
+    protected void injectPresenter() {
     }
 
     @Override

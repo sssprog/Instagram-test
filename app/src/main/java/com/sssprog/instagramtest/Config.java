@@ -24,7 +24,7 @@ public class Config {
 
     public static void initAppComponent(Context context) {
         appComponent = DaggerAppComponent.builder()
-                .appModule(new AppModule(new AppModuleProviderImpl(context)))
+                .appModule(new AppModule(context))
                 .build();
     }
 

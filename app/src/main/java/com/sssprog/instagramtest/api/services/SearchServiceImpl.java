@@ -13,9 +13,15 @@ import rx.schedulers.Schedulers;
 
 public class SearchServiceImpl implements SearchService {
 
+    private InstagramClient client;
+
+    public SearchServiceImpl(InstagramClient client) {
+        this.client = client;
+    }
+
     @Override
     public Observable<List<SearchItem>> search(String userName) {
-        return InstagramClient.getInstance().search(userName)
+        return client.search(userName)
                 .map(response -> transform(response.data != null ? response.data : new ArrayList<>()))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());

@@ -14,8 +14,14 @@ import rx.schedulers.Schedulers;
 
 public class LoginServiceImpl implements LoginService {
 
+    private InstagramClient client;
+
+    public LoginServiceImpl(InstagramClient client) {
+        this.client = client;
+    }
+
     public Observable<Void> login(String code) {
-        return InstagramClient.getInstance().login(code)
+        return client.login(code)
                 .map(new Func1<TokenResponseJson, Void>() {
                     @Override
                     public Void call(TokenResponseJson json) {

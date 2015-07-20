@@ -32,13 +32,18 @@ public class PostServiceImpl implements PostService {
     private static final int ITEM_LIMIT = 10;
     private static final int MAX_COMMENTS = 5;
 
+    private InstagramClient client;
     private AtomicInteger lastRequestId = new AtomicInteger();
+
+    public PostServiceImpl(InstagramClient client) {
+        this.client = client;
+    }
 
     @Override
     public Observable<RecentItemsResponse> getItems(final boolean fromStart) {
         final int requestId = lastRequestId.incrementAndGet();
         String lastId = fromStart ? null : Prefs.getString(R.string.pref_last_item_id);
-        return InstagramClient.getInstance().getRecentItems(lastId, ITEM_LIMIT)
+        return client.getRecentItems(lastId, ITEM_LIMIT)
                 .map(json -> {
                     if (requestId != lastRequestId.get()) {
                         throw new RuntimeException("abort request");
@@ -116,7 +121,7 @@ public class PostServiceImpl implements PostService {
     }
 
     private Observable<PostWithComments> loadComments(final Post post) {
-        return InstagramClient.getInstance().getComments(post.getServerId())
+        return client.getComments(post.getServerId())
                 .map(response -> {
                     List<Comment> comments = saveCommentsToDb(post.getId(),
                             response.data != null ? response.data : new ArrayList<CommentJson>());

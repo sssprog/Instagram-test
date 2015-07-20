@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.sssprog.instagramtest.R;
-import com.sssprog.instagramtest.api.InstagramClient;
+import com.sssprog.instagramtest.api.InstagramClientImpl;
 import com.sssprog.instagramtest.ui.login.LoginActivity;
 import com.sssprog.instagramtest.ui.posts.PostsActivity;
 
@@ -19,7 +19,7 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        if (InstagramClient.getInstance().isLoggedIn()) {
+        if (InstagramClientImpl.getInstance().isLoggedIn()) {
             startPostsActivity();
         }
     }

@@ -10,32 +10,35 @@ public class PresenterHolder<P extends Presenter> {
 
     private final Class<P> presenterClass;
     private final Object view;
-    private P mPresenter;
+    private P presenter;
+    private PresenterHolderListener listener;
 
-    public PresenterHolder(Class<P> presenterClass, Object view) {
+    public PresenterHolder(Class<P> presenterClass, Object view, PresenterHolderListener listener) {
         this.presenterClass = presenterClass;
         this.view = view;
+        this.listener = listener;
     }
 
     public P getPresenter() {
-        return mPresenter;
+        return presenter;
     }
 
     public void init(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            mPresenter = PresenterCache.getInstance().get(view.getClass());
+            presenter = PresenterCache.getInstance().get(view.getClass());
         }
-        if (mPresenter == null) {
-            mPresenter = createPresenter();
-            PresenterCache.getInstance().put(getClass(), mPresenter);
+        if (presenter == null) {
+            presenter = createPresenter();
+            listener.onPresenterCreated();
+            PresenterCache.getInstance().put(getClass(), presenter);
             if (savedInstanceState != null) {
-                mPresenter.restoreState(savedInstanceState.getBundle(STATE_PRESENTER));
+                presenter.restoreState(savedInstanceState.getBundle(STATE_PRESENTER));
             }
         }
     }
 
     public void saveState(Bundle outState) {
-        outState.putBundle(STATE_PRESENTER, mPresenter.saveState());
+        outState.putBundle(STATE_PRESENTER, presenter.saveState());
     }
 
     public void onDestroy() {
@@ -50,11 +53,15 @@ public class PresenterHolder<P extends Presenter> {
         }
     }
 
-    public static <P extends Presenter> PresenterHolder<P> createHolder(Object view) {
+    public static <P extends Presenter> PresenterHolder<P> createHolder(Object view, PresenterHolderListener listener) {
         PresenterClass annotation = view.getClass().getAnnotation(PresenterClass.class);
         Assert.assertNotNull(annotation);
         Class<P> presenterClass = (Class<P>) annotation.value();
-        return new PresenterHolder<>(presenterClass, view);
+        return new PresenterHolder<>(presenterClass, view, listener);
+    }
+
+    public interface PresenterHolderListener {
+        void onPresenterCreated();
     }
 
 }
