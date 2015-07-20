@@ -1,13 +1,15 @@
 package com.sssprog.instagramtest.ui.search;
 
-import com.sssprog.instagramtest.Config;
 import com.sssprog.instagramtest.api.SimpleRxSubscriber;
 import com.sssprog.instagramtest.api.models.SearchItem;
+import com.sssprog.instagramtest.api.services.SearchService;
 import com.sssprog.instagramtest.mvp.Presenter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
 
 import rx.subjects.PublishSubject;
 
@@ -15,10 +17,13 @@ public class SearchPresenter extends Presenter<SearchActivity> {
 
     private static final long DELAY = 500;
 
+    private SearchService searchService;
     private String lastSearch;
     private PublishSubject<String> requests = PublishSubject.create();
 
-    public SearchPresenter() {
+    @Inject
+    public SearchPresenter(SearchService searchService) {
+        this.searchService = searchService;
         requests = PublishSubject.create();
         requests.debounce(DELAY, TimeUnit.MILLISECONDS)
                 .subscribe(new SimpleRxSubscriber<String>() {
@@ -35,7 +40,7 @@ public class SearchPresenter extends Presenter<SearchActivity> {
 
     private void searchInternal(final String userName) {
         lastSearch = userName;
-        Config.appComponent().searchService().search(userName)
+        searchService.search(userName)
                 .subscribe(new SimpleRxSubscriber<List<SearchItem>>() {
                     @Override
                     public void onNext(final List<SearchItem> items) {

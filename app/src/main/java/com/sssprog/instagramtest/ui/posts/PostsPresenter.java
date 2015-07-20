@@ -1,16 +1,24 @@
 package com.sssprog.instagramtest.ui.posts;
 
-import com.sssprog.instagramtest.Config;
 import com.sssprog.instagramtest.api.SimpleRxSubscriber;
 import com.sssprog.instagramtest.api.models.RecentItemsResponse;
+import com.sssprog.instagramtest.api.services.PostService;
 import com.sssprog.instagramtest.mvp.Presenter;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 public class PostsPresenter extends Presenter<PostsActivity> {
 
+    private PostService postService;
     private int lastRequestId;
     private boolean isLoading;
+
+    @Inject
+    public PostsPresenter(PostService postService) {
+        this.postService = postService;
+    }
 
     public void loadItems(final boolean fromStart) {
         // Don't make more then one request for more items,
@@ -21,7 +29,7 @@ public class PostsPresenter extends Presenter<PostsActivity> {
         isLoading = true;
         lastRequestId++;
         final int requestId = lastRequestId;
-        Config.appComponent().postService().getItems(fromStart)
+        postService.getItems(fromStart)
                 .subscribe(new SimpleRxSubscriber<RecentItemsResponse>() {
                     @Override
                     public void onNext(final RecentItemsResponse response) {

@@ -14,9 +14,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.sssprog.instagramtest.Config;
 import com.sssprog.instagramtest.R;
 import com.sssprog.instagramtest.api.models.SearchItem;
-import com.sssprog.instagramtest.mvp.PresenterClass;
+import com.sssprog.instagramtest.mvp.PresenterFactory;
 import com.sssprog.instagramtest.ui.BaseMvpActivity;
 import com.sssprog.instagramtest.utils.CircleTransform;
 import com.sssprog.instagramtest.utils.Prefs;
@@ -28,7 +29,6 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-@PresenterClass(SearchPresenter.class)
 public class SearchActivity extends BaseMvpActivity<SearchPresenter> {
 
     @InjectView(R.id.listView)
@@ -58,6 +58,13 @@ public class SearchActivity extends BaseMvpActivity<SearchPresenter> {
         initStateSwitcher();
         updateState();
         initBehaviour();
+    }
+
+    @Override
+    protected PresenterFactory<SearchPresenter> getPresenterFactory() {
+        return DaggerSearchActivityComponent.builder()
+                .appComponent(Config.appComponent())
+                .build();
     }
 
     private void initStateSwitcher() {

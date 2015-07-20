@@ -10,7 +10,6 @@ import rx.Observable;
 public interface InstagramClient {
     String getAuthUrl();
     String getCallbackUrl();
-    boolean isLoggedIn();
     Observable<TokenResponseJson> login(final String code);
     Observable<RecentResponseJson> getRecentItems(String lastId, int count);
     Observable<SearchResponseJson> search(String userName);

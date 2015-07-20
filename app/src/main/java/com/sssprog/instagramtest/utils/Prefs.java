@@ -107,4 +107,12 @@ public class Prefs {
 		return getString(R.string.pref_current_user_id);
 	}
 
+	public static String getAccessToken() {
+		return getString(R.string.pref_instagram_access_token);
+	}
+
+	public static boolean isLoggedIn() {
+		return getAccessToken() != null;
+	}
+
 }

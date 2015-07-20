@@ -13,10 +13,11 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import com.sssprog.instagramtest.Config;
 import com.sssprog.instagramtest.R;
 import com.sssprog.instagramtest.api.database.Comment;
 import com.sssprog.instagramtest.api.models.PostWithComments;
-import com.sssprog.instagramtest.mvp.PresenterClass;
+import com.sssprog.instagramtest.mvp.PresenterFactory;
 import com.sssprog.instagramtest.ui.BaseMvpActivity;
 import com.sssprog.instagramtest.utils.ViewStateSwitcher;
 
@@ -26,7 +27,6 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-@PresenterClass(PostPresenter.class)
 public class PostActivity extends BaseMvpActivity<PostPresenter> {
 
     private static final String PARAM_POST_ID = "PARAM_POST_ID";
@@ -58,6 +58,13 @@ public class PostActivity extends BaseMvpActivity<PostPresenter> {
         ViewStateSwitcher.addTextState(stateSwitcher, ViewStateSwitcher.STATE_EMPTY, R.string.general_error_message);
         stateSwitcher.switchToLoading(false);
         getPresenter().loadData(getIntent().getExtras().getLong(PARAM_POST_ID));
+    }
+
+    @Override
+    protected PresenterFactory<PostPresenter> getPresenterFactory() {
+        return DaggerPostActivityComponent.builder()
+                .appComponent(Config.appComponent())
+                .build();
     }
 
     void onDataLoaded(PostWithComments data) {

@@ -13,7 +13,7 @@ import android.widget.Toast;
 import com.sssprog.instagramtest.Config;
 import com.sssprog.instagramtest.R;
 import com.sssprog.instagramtest.api.InstagramClient;
-import com.sssprog.instagramtest.mvp.PresenterClass;
+import com.sssprog.instagramtest.mvp.PresenterFactory;
 import com.sssprog.instagramtest.ui.BaseMvpActivity;
 import com.sssprog.instagramtest.utils.LogHelper;
 
@@ -22,7 +22,6 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-@PresenterClass(LoginPresenter.class)
 public class LoginActivity extends BaseMvpActivity<LoginPresenter> {
 
     private static final String TAG = LogHelper.getTag(LoginActivity.class);
@@ -38,12 +37,12 @@ public class LoginActivity extends BaseMvpActivity<LoginPresenter> {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-        ButterKnife.inject(this);
         component = DaggerLoginActivityComponent.builder()
                 .appComponent(Config.appComponent())
                 .build();
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+        ButterKnife.inject(this);
         component.inject(this);
 
         setUpWebView();
@@ -53,9 +52,8 @@ public class LoginActivity extends BaseMvpActivity<LoginPresenter> {
     }
 
     @Override
-    protected void injectPresenter() {
-        super.injectPresenter();
-        component.inject(getPresenter());
+    protected PresenterFactory<LoginPresenter> getPresenterFactory() {
+        return component;
     }
 
     @Override

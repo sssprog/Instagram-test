@@ -8,7 +8,6 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 import com.sssprog.instagramtest.Config;
-import com.sssprog.instagramtest.R;
 import com.sssprog.instagramtest.api.json.CommentResponseJson;
 import com.sssprog.instagramtest.api.json.RecentResponseJson;
 import com.sssprog.instagramtest.api.json.SearchResponseJson;
@@ -95,15 +94,6 @@ public class InstagramClientImpl implements InstagramClient {
         return client;
     }
 
-    private String getAccessToken() {
-        return Prefs.getString(R.string.pref_instagram_access_token);
-    }
-
-    @Override
-    public boolean isLoggedIn() {
-        return getAccessToken() != null;
-    }
-
     @Override
     public Observable<RecentResponseJson> getRecentItems(String lastId, final int count) {
         QueryParams params = getBasicQueryParams()
@@ -135,7 +125,7 @@ public class InstagramClientImpl implements InstagramClient {
 
     private QueryParams getBasicQueryParams() {
         return new QueryParams()
-                .add(PARAM_TOKEN, getAccessToken());
+                .add(PARAM_TOKEN, Prefs.getAccessToken());
     }
 
     private String makeApiUrl(String path, QueryParams queryParams, Object... pathParams) {

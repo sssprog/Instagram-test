@@ -8,8 +8,12 @@ import javax.inject.Inject;
 
 public class LoginPresenter extends BlockingPresenter<LoginActivity> {
 
+    private LoginService loginService;
+
     @Inject
-    LoginService loginService;
+    public LoginPresenter(LoginService loginService) {
+        this.loginService = loginService;
+    }
 
     public void login(String code) {
         setExecutingRequest(true);

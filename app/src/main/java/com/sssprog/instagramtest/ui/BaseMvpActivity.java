@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import com.sssprog.instagramtest.dialogs.ProgressDialogFragment;
 import com.sssprog.instagramtest.mvp.Presenter;
+import com.sssprog.instagramtest.mvp.PresenterFactory;
 import com.sssprog.instagramtest.mvp.PresenterHolder;
 
 public abstract class BaseMvpActivity<P extends Presenter> extends BaseActivity {
@@ -19,13 +20,12 @@ public abstract class BaseMvpActivity<P extends Presenter> extends BaseActivity 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        presenterHolder = PresenterHolder.createHolder(this, this::injectPresenter);
+        presenterHolder = new PresenterHolder<>(this, getPresenterFactory());
         presenterHolder.init(savedInstanceState);
         getPresenter().attach(this);
     }
 
-    protected void injectPresenter() {
-    }
+    protected abstract PresenterFactory<P> getPresenterFactory();
 
     @Override
     public void onResume() {
